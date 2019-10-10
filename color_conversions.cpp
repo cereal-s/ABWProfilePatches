@@ -22,6 +22,9 @@ SOFTWARE.
 
 #include <array>
 #include <vector>
+
+// adding math.h to include pow, atan2, sqrt, sin, cos, exp in the scope
+#include <math.h>
 #include "color_conversions.h"
 
 namespace color_conversions {

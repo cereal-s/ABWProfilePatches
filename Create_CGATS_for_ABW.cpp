@@ -20,13 +20,18 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 */
 
+#include <stdexcept>
 #include <iostream>
 #include <string>
+
+// adding algorithm to fix the error: no matching function for call to find()
+#include <algorithm>
 #include <locale>
 #include "Create_CGATS_for_ABW_Routines.h"
 
 using std::cout;
 using std::string;
+//using std::find;
 
 void usage()
 {
@@ -48,7 +53,7 @@ void usage()
         "     ---------- Step 3 -----------\n"
         "ABWProfilePatches Profile\n"
         "  Where profile is the name of base profile with a suffix of \".icm\"\n"
-        "  There must be two profiles from the previos step. The second profile has the\n"
+        "  There must be two profiles from the previous step. The second profile has the\n"
         "  same name with \"_adj\" added. The A2B1 tables inside the Profile_adj.icm\n"
         "  will replace the A2B1 table inside Profile.icm.\n\n"
         "" };
@@ -150,8 +155,8 @@ int main(int argc, char** argv)
             usage();
         }
     }
-    catch (std::exception e) {
-        std::cout << e.what() << "\n\n\n";
+    catch (std::exception& e) {
+        std::cout << "Exception: " << e.what() << "\n\n\n";
         usage();
     }
     return 0;

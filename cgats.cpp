@@ -21,6 +21,10 @@ SOFTWARE.
 */
 
 #include "cgats.h"
+
+// Including stdio and assert to support the fopen_s adaptor
+#include <stdio.h>
+#include <assert.h>
 #include <fstream>
 #include <utility>
 #include "statistics.h"
@@ -29,6 +33,20 @@ SOFTWARE.
 #pragma warning(disable : 4996)
 
 namespace cgats_utilities {
+
+    // fopen_s() is a Microsoft function, this is an adaptor function
+    // that delegates fopen() on platforms that don't have fopen_s()
+    // @see https://stackoverflow.com/a/1513215
+    error_t fopen_s(FILE **f, const char *name, const char *mode) {
+        error_t ret = 0;
+        assert(f);
+        *f = fopen(name, mode);
+        /* Can't be sure about 1-to-1 mapping of errno and MS' errno_t */
+        if (!*f)
+            ret = errno;
+        return ret;
+    }
+
     // Read CGATs file RGB values and optional LAB values.
     // Structure is read but not used for easy extension.
     vector<V6> read_cgats_rgblab(string filename, bool include_lab)
@@ -106,7 +124,7 @@ namespace cgats_utilities {
                 else if (state == InDataSet)
                 {
                     if (rgb_lab.size() >= number_of_sets)
-                        throw std::runtime_error("Malformed CGATs file.Too  many data set entries");
+                        throw std::runtime_error("Malformed CGATs file. Too many data set entries");
                     V6 entry{};
                     for (int i = 0; i < std::max(rgb_start, lab_start)+3; i++, words_begin++)
                     {
@@ -158,7 +176,8 @@ namespace cgats_utilities {
     // Writes CGATs file containing RGB and LAB fields only - No spectral data
     bool write_cgats_rgblab(vector<V6> rgblab, string filename, string descriptor)
     {
-        FILE* fp = fopen(filename.c_str(), "wt");
+        FILE* fp;
+        auto errcode = fopen_s(&fp, filename.c_str(), "wt");
         if (!fp)
             return false;
         fprintf(fp,

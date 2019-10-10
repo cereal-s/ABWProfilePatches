@@ -22,6 +22,9 @@ SOFTWARE.
 
 
 #include <numeric>
+
+// adding algorithm to fix the error: 'transform' is not a member of 'std'
+#include <algorithm>
 #include "PatchFilter.h"
 #include "color_conversions.h"
 using namespace color_conversions;
